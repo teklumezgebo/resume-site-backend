@@ -61,8 +61,6 @@ if it passes, deploys the updated code to the live Lambda function.
 
 - Serverless architecture (API Gateway → Lambda → DynamoDB)
 - Least-privilege IAM policies scoped to specific resources
-- Infrastructure as code with Terraform, including importing manually-provisioned
-  resources into Terraform state
 - Automated testing with mocked AWS services
 - CI/CD via GitHub Actions
 
