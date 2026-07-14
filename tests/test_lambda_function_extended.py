@@ -12,15 +12,14 @@ from moto import mock_aws
 
 from lambda_function import lambda_handler
 
-
 TABLE_NAME = 'resume-visitor-count'
 
 
 @pytest.fixture
-def dynamodb_table():
+def empty_dynamodb_table():
     """
-    Spins up a FAKE DynamoDB table before each test runs, seeded with
-    a starting count of 0, moto tears it down automatically after.
+    Same as before, but WITHOUT seeding a starting item
+    this simulates a brand new table with no counter row yet.
     """
     with mock_aws():
         dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
@@ -30,36 +29,29 @@ def dynamodb_table():
             AttributeDefinitions=[{'AttributeName': 'id', 'AttributeType': 'S'}],
             BillingMode='PAY_PER_REQUEST'
         )
-        table.put_item(Item={'id': 'counter', 'count': 0})
         yield table
 
 
-def test_lambda_increments_count_from_zero(dynamodb_table):
+def test_lambda_handles_missing_counter_item(empty_dynamodb_table):
+    """
+    DynamoDB's update_item with an ADD/SET expression on a non-existent item
+    creates it automatically, treating a missing number as 0 first.
+    """
     response = lambda_handler({}, {})
 
     assert response['statusCode'] == 200
     body = json.loads(response['body'])
     assert body == 1
+    
 
-
-def test_lambda_increments_count_multiple_times(dynamodb_table):
-    first = json.loads(lambda_handler({}, {})['body'])
-    second = json.loads(lambda_handler({}, {})['body'])
-    third = json.loads(lambda_handler({}, {})['body'])
-
-    assert first == 1
-    assert second == 2
-    assert third == 3
-
-
-def test_lambda_returns_cors_header(dynamodb_table):
+def test_lambda_response_has_expected_keys(empty_dynamodb_table):
+    """
+    Confirms the response dict has exactly the structure API Gateway
+    (Lambda proxy integration).
+    """
     response = lambda_handler({}, {})
 
-    assert response['headers']['Access-Control-Allow-Origin'] == '*'
-
-
-def test_lambda_returns_valid_json_number(dynamodb_table):
-    response = lambda_handler({}, {})
-    body = json.loads(response['body'])
-
-    assert isinstance(body, int)
+    assert 'statusCode' in response
+    assert 'headers' in response
+    assert 'body' in response
+    assert isinstance(response['body'], str)  # body must be a string, not a raw dict/number

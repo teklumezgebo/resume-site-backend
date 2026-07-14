@@ -1,0 +1,7 @@
+# Runtime dependency (pre-installed in the Lambda environment,
+# but included here so local dev/testing matches)
+boto3>=1.43.0
+
+# Testing dependencies
+pytest>=9.1.0
+moto>=5.2.0
