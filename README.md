@@ -66,5 +66,4 @@ if it passes, deploys the updated code to the live Lambda function.
 
 ## Related
 
-- Frontend repo: 
-- Live site: [teklu.me](https://teklu.me)
+- [Frontend repo](https://github.com/teklumezgebo/resume-site-frontend)
