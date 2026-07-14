@@ -22,7 +22,7 @@ that atomically increments a counter stored in DynamoDB and returns the new valu
 
 ## Tech stack
 
-- **AWS Lambda** — Python 3.12, handles the increment logic
+- **AWS Lambda** — Python 3.14, handles the increment logic
 - **Amazon DynamoDB** — on-demand billing, single-table counter storage
 - **Amazon API Gateway** — REST API, CORS-enabled, proxies requests to Lambda
 - **pytest + moto** — unit tests with mocked AWS services, no real infrastructure touched
